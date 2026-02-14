@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 
 class PatientAppointmentController extends Controller
@@ -47,6 +48,10 @@ class PatientAppointmentController extends Controller
         $data['status'] = 'pending';
         
         $appointment = Appointment::create($data);
+        
+        // Update patient's keluhan field
+        Patient::where('id', $request->user()->id)
+            ->update(['keluhan' => $data['keluhan']]);
         
         return response()->json([
             'success' => true,

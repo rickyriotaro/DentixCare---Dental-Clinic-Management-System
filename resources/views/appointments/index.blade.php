@@ -25,7 +25,7 @@
       <tbody>
       @forelse ($appointments as $i => $a)
     <tr>
-      <td>{{ $i + 1 }}</td>
+      <td>{{ $appointments->firstItem() + $i }}</td>
 
       <td>{{ $a->patient?->nama_lengkap ?? '-' }}</td>
       <td>{{ $a->tanggal_diminta }}</td>

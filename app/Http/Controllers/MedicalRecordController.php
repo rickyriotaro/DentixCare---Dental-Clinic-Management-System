@@ -42,6 +42,12 @@ class MedicalRecordController extends Controller
 
     MedicalRecord::create($data);
 
+    // Update patient's keluhan field with latest complaint
+    if (!empty($data['keluhan'])) {
+        Patient::where('id', $data['patient_id'])
+            ->update(['keluhan' => $data['keluhan']]);
+    }
+
     return redirect()
         ->route('rekammedis.index')
         ->with('success', 'Rekam medis berhasil disimpan dengan No.RM: ' . $no_rm);
