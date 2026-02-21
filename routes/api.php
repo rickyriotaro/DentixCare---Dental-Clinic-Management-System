@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // APPOINTMENTS
     // ==================
     Route::get('/patient/appointments/upcoming', [PatientAppointmentController::class, 'upcoming']);
+    Route::get('/patient/appointments/slots', [PatientAppointmentController::class, 'getAvailableSlots']);
     Route::get('/patient/appointments', [PatientAppointmentController::class, 'index']);
     Route::post('/patient/appointments', [PatientAppointmentController::class, 'store']);
     Route::get('/patient/appointments/{id}', [PatientAppointmentController::class, 'show']);
@@ -105,3 +106,31 @@ Route::get('/fhir/Condition', [FHIRController::class, 'getAllConditions']);
 // FHIR Procedure Resource (Tindakan)
 Route::get('/fhir/Procedure/{id}', [FHIRController::class, 'getProcedure']);
 Route::get('/fhir/Procedure', [FHIRController::class, 'getAllProcedures']);
+
+// =====================================
+// FHIR WRITE OPERATIONS (POST/PUT/DELETE)
+// =====================================
+
+// Patient Write Operations
+Route::post('/fhir/Patient', [FHIRController::class, 'createPatient']);
+Route::put('/fhir/Patient/{id}', [FHIRController::class, 'updatePatient']);
+Route::patch('/fhir/Patient/{id}', [FHIRController::class, 'patchPatient']);
+Route::delete('/fhir/Patient/{id}', [FHIRController::class, 'deletePatient']);
+
+// Appointment Write Operations
+Route::post('/fhir/Appointment', [FHIRController::class, 'createAppointment']);
+Route::put('/fhir/Appointment/{id}', [FHIRController::class, 'updateAppointment']);
+Route::patch('/fhir/Appointment/{id}', [FHIRController::class, 'patchAppointment']);
+Route::delete('/fhir/Appointment/{id}', [FHIRController::class, 'deleteAppointment']);
+
+// Condition Write Operations (Medical Diagnosis)
+Route::post('/fhir/Condition', [FHIRController::class, 'createCondition']);
+Route::put('/fhir/Condition/{id}', [FHIRController::class, 'updateCondition']);
+Route::patch('/fhir/Condition/{id}', [FHIRController::class, 'patchCondition']);
+Route::delete('/fhir/Condition/{id}', [FHIRController::class, 'deleteCondition']);
+
+// Procedure Write Operations (Medical Treatment)
+Route::post('/fhir/Procedure', [FHIRController::class, 'createProcedure']);
+Route::put('/fhir/Procedure/{id}', [FHIRController::class, 'updateProcedure']);
+Route::patch('/fhir/Procedure/{id}', [FHIRController::class, 'patchProcedure']);
+Route::delete('/fhir/Procedure/{id}', [FHIRController::class, 'deleteProcedure']);

@@ -35,30 +35,57 @@
     <form method="POST" action="{{ route('dokter.appointments.approve', $appointment->id) }}">
       @csrf
 
+      @php $isPending = $appointment->status === 'pending'; @endphp
+
+      {{-- Shortcut: gunakan waktu dari pasien --}}
+      @if($isPending)
+      <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-weight:700;color:#15803d;font-size:13px;">⏱ Waktu yang diminta pasien</div>
+          <div style="color:#166534;margin-top:2px;font-size:14px;">
+            📅 {{ $appointment->tanggal_diminta ?? '-' }}
+            &nbsp;|&nbsp;
+            🕐 {{ substr($appointment->jam_diminta ?? '', 0, 5) ?? '-' }}
+          </div>
+        </div>
+        <button type="button"
+          onclick="document.querySelector('[name=tanggal_dikonfirmasi]').value='{{ $appointment->tanggal_diminta }}';
+                   document.querySelector('[name=jam_dikonfirmasi]').value='{{ substr($appointment->jam_diminta ?? '', 0, 5) }}';"
+          style="background:#16a34a;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;">
+          ✅ Gunakan Waktu Pasien
+        </button>
+      </div>
+      @endif
+
       <div class="grid-2">
         <div class="form-row">
           <label>Tanggal Dikonfirmasi</label>
           <input type="date" class="form-input" name="tanggal_dikonfirmasi"
-                 value="{{ old('tanggal_dikonfirmasi', $appointment->tanggal_dikonfirmasi) }}" required>
+                 value="{{ old('tanggal_dikonfirmasi', $appointment->tanggal_dikonfirmasi) }}"
+                 {{ !$isPending ? 'readonly disabled' : 'required' }}
+                 style="{{ !$isPending ? 'background:#f3f4f6;color:#9ca3af;cursor:not-allowed;' : '' }}">
           @error('tanggal_dikonfirmasi') <small class="err">{{ $message }}</small> @enderror
         </div>
 
         <div class="form-row">
           <label>Jam Dikonfirmasi</label>
           <input type="time" class="form-input" name="jam_dikonfirmasi"
-                 value="{{ old('jam_dikonfirmasi', $appointment->jam_dikonfirmasi) }}" required>
+                 value="{{ old('jam_dikonfirmasi', $appointment->jam_dikonfirmasi) }}"
+                 {{ !$isPending ? 'readonly disabled' : 'required' }}
+                 style="{{ !$isPending ? 'background:#f3f4f6;color:#9ca3af;cursor:not-allowed;' : '' }}">
           @error('jam_dikonfirmasi') <small class="err">{{ $message }}</small> @enderror
         </div>
       </div>
 
       <div class="form-actions" style="justify-content:center;">
-        <button class="btn-primary" type="submit" style="min-width:170px;"
-          @if($appointment->status !== 'pending') disabled @endif>
+        <button class="btn-primary" type="submit" style="min-width:170px;
+          {{ !$isPending ? 'opacity:0.45;cursor:not-allowed;pointer-events:none;' : '' }}"
+          {{ !$isPending ? 'disabled' : '' }}>
           Setujui Jadwal
         </button>
       </div>
 
-      @if($appointment->status !== 'pending')
+      @if(!$isPending)
         <div style="text-align:center;color:#6b7280;font-size:13px;margin-top:10px;">
           Jadwal sudah diproses.
         </div>

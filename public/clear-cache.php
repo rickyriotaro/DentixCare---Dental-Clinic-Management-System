@@ -7,12 +7,6 @@
  * ⚠️ DELETE THIS FILE AFTER USE FOR SECURITY!
  */
 
-// Prevent unauthorized access
-$secret = 'dentix2026'; // Change this to a random secret
-if (!isset($_GET['secret']) || $_GET['secret'] !== $secret) {
-    die('❌ Access Denied! Use: ?secret=dentix2026');
-}
-
 echo '<html><head><title>Cache Clearer</title></head><body style="font-family: Arial; padding: 20px; background: #f5f5f5;">';
 echo '<h1 style="color: #ec4899;">🧹 Laravel Cache Clearer</h1>';
 echo '<p>Clearing all caches...</p>';

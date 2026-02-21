@@ -17,6 +17,7 @@ class Appointment extends Model
         'tanggal_dikonfirmasi',
         'jam_dikonfirmasi',
         'status',
+        'alasan_penolakan',
     ];
 
      public function patient()

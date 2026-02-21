@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MedicalRecord;
 use App\Models\TreatmentPlan;
+use App\Models\PatientControl;
 use Illuminate\Http\Request;
 
 class DokterTreatmentPlanController extends Controller
@@ -56,6 +57,20 @@ class DokterTreatmentPlanController extends Controller
             'dokter_id'         => auth()->id(),
             ...$data,
         ]);
+
+        // ✅ Auto-create / update PatientControl from rencana perawatan
+        PatientControl::updateOrCreate(
+            ['medical_record_id' => $medicalRecord->id],
+            [
+                'dokter_id'       => auth()->id(),
+                // Gunakan tanggal rencana, atau hari ini sebagai fallback (kolom NOT NULL)
+                'tanggal_kontrol' => $data['tanggal_rencana'] ?? now()->toDateString(),
+                'jam_kontrol'     => $data['jam_rencana'] ?? null,
+                // 'terjadwal' sesuai DB: terjadwal | selesai | batal
+                'status'          => 'terjadwal',
+                'catatan'         => $data['judul'] ?? 'Rencana perawatan dari dokter',
+            ]
+        );
 
         // Kirim notifikasi ke pasien
         \App\Models\Notification::create([

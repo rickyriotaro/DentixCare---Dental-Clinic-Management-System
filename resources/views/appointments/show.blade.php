@@ -9,9 +9,18 @@
       <a class="btn-ghost" href="{{ route('appointments.index') }}">Kembali</a>
 
       @if($appointment->status === 'pending')
-      <form method="POST" action="{{ route('appointments.reject', $appointment->id) }}">
+      <form method="POST" action="{{ route('appointments.reject', $appointment->id) }}"
+            id="reject-form" style="display:flex;flex-direction:column;gap:8px;background:#fff5f5;padding:12px;border-radius:8px;border:1px solid #fca5a5;margin-bottom:12px;">
         @csrf
-        <button class="btn-danger" type="submit" onclick="return confirm('Tolak permintaan ini?')">Tolak</button>
+        <div style="font-weight:600;color:#dc2626;">Tolak & Informasikan ke Pasien</div>
+        <textarea name="alasan" rows="2" placeholder="Tulis alasan/informasi untuk pasien (wajib)..."
+          style="width:100%;border:1px solid #fca5a5;border-radius:6px;padding:8px;font-size:13px;resize:vertical;"
+          required></textarea>
+        <div>
+          <button class="btn-danger" type="submit" onclick="return confirm('Tolak dan kirim informasi ke pasien?')">
+            Tolak & Kirim Notifikasi
+          </button>
+        </div>
       </form>
       @endif
     </div>
@@ -34,6 +43,28 @@
 
     <form method="POST" action="{{ route('appointments.approve', $appointment->id) }}">
       @csrf
+
+      @php $isPending = $appointment->status === 'pending'; @endphp
+
+      {{-- Shortcut: gunakan waktu dari pasien --}}
+      @if($isPending)
+      <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-weight:700;color:#15803d;font-size:13px;">⏱ Waktu yang diminta pasien</div>
+          <div style="color:#166534;margin-top:4px;font-size:14px;">
+            📅 {{ $appointment->tanggal_diminta ?? '-' }}
+            &nbsp;|&nbsp;
+            🕐 {{ substr($appointment->jam_diminta ?? '', 0, 5) }}
+          </div>
+        </div>
+        <button type="button"
+          onclick="document.querySelector('[name=tanggal_dikonfirmasi]').value='{{ $appointment->tanggal_diminta }}';
+                   document.querySelector('[name=jam_dikonfirmasi]').value='{{ substr($appointment->jam_diminta ?? '', 0, 5) }}';"
+          style="background:#16a34a;color:#fff;border:none;padding:9px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;white-space:nowrap;">
+          ✅ Gunakan Waktu Pasien
+        </button>
+      </div>
+      @endif
 
       <div class="grid-2">
         <div class="form-row">

@@ -14,11 +14,16 @@
       • {{ $medicalRecord->patient->alamat ?? '-' }}
     </div>
   </div>
-  <a class="btn-ghost"
-     href="{{ route('dokter.rekammedis.index') }}"
-     style="white-space:nowrap;">
-    Kembali
-  </a>
+  <div style="display:flex;gap:10px;align-items:center;white-space:nowrap;">
+    <a class="btn-ghost"
+       href="{{ route('dokter.rekammedis.index') }}">
+      Kembali
+    </a>
+    <a href="{{ route('dokter.perawatan.create', $medicalRecord->id) }}"
+       style="background:var(--pink);color:#fff;padding:8px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">
+      + Rencana Perawatan
+    </a>
+  </div>
 </div>
 
 

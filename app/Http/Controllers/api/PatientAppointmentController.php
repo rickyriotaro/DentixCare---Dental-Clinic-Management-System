@@ -106,4 +106,51 @@ class PatientAppointmentController extends Controller
             'appointments' => $appointments
         ]);
     }
+
+    /**
+     * GET /patient/appointments/slots?date=YYYY-MM-DD
+     * Return booked slots for a given date (so mobile can disable them)
+     */
+    public function getAvailableSlots(Request $request)
+    {
+        $date = $request->query('date');
+        if (!$date) {
+            return response()->json(['error' => 'date parameter required'], 400);
+        }
+
+        // All possible slots
+        $allSlots = ['16:00', '17:00', '18:00', '19:00', '20:00'];
+
+        // Slots already booked — pakai jam_dikonfirmasi (jam yg DOKTER set), bukan jam_diminta pasien
+        // Hanya approved yang blok, karena itulah jam yg benar-benar dikonfirmasi
+        $bookedSlots = Appointment::whereDate('tanggal_dikonfirmasi', $date)
+            ->where('status', 'approved')
+            ->whereNotNull('jam_dikonfirmasi')
+            ->pluck('jam_dikonfirmasi')
+            ->map(fn($t) => substr($t, 0, 5)) // normalise "16:00:00" → "16:00"
+            ->toArray();
+
+        // If date is today (WIB), also mark past/current slots as unavailable
+        $pastSlots = [];
+        $nowWib = now(); // 'Asia/Jakarta' from config
+        if ($date === $nowWib->toDateString()) {
+            foreach ($allSlots as $slot) {
+                // Parse slot as a Carbon time on today's date
+                [$slotHour, $slotMin] = explode(':', $slot);
+                $slotTime = $nowWib->copy()->setTime((int)$slotHour, (int)$slotMin, 0);
+                // Disable if slot time has already passed (give 5-min buffer)
+                if ($nowWib->gte($slotTime)) {
+                    $pastSlots[] = $slot;
+                }
+            }
+        }
+
+        $unavailable = array_values(array_unique(array_merge($bookedSlots, $pastSlots)));
+
+        return response()->json([
+            'date'        => $date,
+            'all_slots'   => $allSlots,
+            'unavailable' => $unavailable,
+        ]);
+    }
 }

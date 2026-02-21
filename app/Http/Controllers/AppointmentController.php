@@ -68,20 +68,34 @@ class AppointmentController extends Controller
 
     public function reject(Request $request, Appointment $appointment)
     {
-        $appointment->update([
-            'status' => 'rejected'
+        $request->validate([
+            'alasan' => 'nullable|string|max:500',
         ]);
+
+        $appointment->update([
+            'status'            => 'rejected',
+            'alasan_penolakan'  => $request->input('alasan'),
+        ]);
+
+        $alasan = $request->input('alasan');
+        $pesan = 'Maaf, permintaan janji temu Anda pada tanggal ' .
+            $appointment->tanggal_diminta . ' pukul ' . $appointment->jam_diminta . ' belum dapat diproses.';
+        if ($alasan) {
+            $pesan .= ' Informasi dari klinik: ' . $alasan;
+        } else {
+            $pesan .= ' Silakan ajukan jadwal lain.';
+        }
 
         Notification::create([
             'patient_id' => $appointment->patient_id,
             'no_hp'      => $appointment->patient->no_hp ?? '',
             'jenis'      => 'appointment',
-            'judul'      => 'Jadwal Janji Temu Ditolak',
-            'pesan'      => 'Maaf, permintaan janji temu Anda belum dapat diproses. Silakan ajukan jadwal lain.',
+            'judul'      => 'Jadwal Janji Temu Tidak Dapat Diproses',
+            'pesan'      => $pesan,
             'status'     => 'unread',
             'related_id' => $appointment->id,
         ]);
 
-        return redirect()->route('appointments.index')->with('success', 'Permintaan ditolak dan notifikasi terkirim.');
+        return redirect()->route('appointments.index')->with('success', 'Permintaan ditolak dan notifikasi terkirim ke pasien.');
     }
 }

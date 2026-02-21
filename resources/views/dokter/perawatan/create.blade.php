@@ -6,7 +6,7 @@
   <div>
     <div class="page-title" style="color:var(--pink);font-weight:900;">Buat Rencana Perawatan</div>
     <div style="color:#6b7280;margin-top:6px;">
-      {{ $medicalRecord->nama_pasien ?? $medicalRecord->patient?->nama_pasien ?? '-' }}
+      {{ $medicalRecord->patient->nama_lengkap ?? $medicalRecord->patient->nama_pasien ?? '-' }}
       • No RM: {{ $medicalRecord->no_rm ?? '-' }}
     </div>
   </div>
@@ -30,13 +30,16 @@
     <div style="display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:14px;">
       <div>
         <label style="font-weight:700;color:#374151;">Tanggal Rencana</label>
-        <input type="date" name="tanggal_rencana" value="{{ old('tanggal_rencana') }}"
+        <input type="date" name="tanggal_rencana" id="tanggal_rencana"
+               value="{{ old('tanggal_rencana') }}"
+               min="{{ now()->toDateString() }}"
                style="margin-top:6px;width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:12px;outline:none;">
       </div>
 
       <div>
         <label style="font-weight:700;color:#374151;">Jam Rencana</label>
-        <input type="time" name="jam_rencana" value="{{ old('jam_rencana') }}"
+        <input type="time" name="jam_rencana" id="jam_rencana"
+               value="{{ old('jam_rencana') }}"
                style="margin-top:6px;width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:12px;outline:none;">
       </div>
 
@@ -76,4 +79,29 @@
     </div>
   </div>
 </form>
+
+<script>
+  // Jika tanggal yang dipilih adalah hari ini, batasi jam agar tidak bisa pilih jam yang sudah lewat
+  const nowWib = new Date(new Date().toLocaleString('en-US', {timeZone: 'Asia/Jakarta'}));
+  const todayStr = nowWib.toISOString().slice(0,10);
+  const currentTimeStr = nowWib.toTimeString().slice(0,5); // "HH:MM"
+
+  const tglInput = document.getElementById('tanggal_rencana');
+  const jamInput = document.getElementById('jam_rencana');
+
+  function updateMinTime() {
+    if (tglInput.value === todayStr) {
+      jamInput.min = currentTimeStr;
+      // Kalau jam yg sudah dipilih lebih kecil dari sekarang, reset
+      if (jamInput.value && jamInput.value < currentTimeStr) {
+        jamInput.value = '';
+      }
+    } else {
+      jamInput.removeAttribute('min');
+    }
+  }
+
+  tglInput.addEventListener('change', updateMinTime);
+  updateMinTime(); // run on page load
+</script>
 @endsection
