@@ -24,35 +24,26 @@
       </thead>
       <tbody>
       @forelse ($appointments as $i => $a)
-    <tr>
-      <td>{{ $appointments->firstItem() + $i }}</td>
-
-      <td>{{ $a->patient?->nama_lengkap ?? '-' }}</td>
-      <td>{{ $a->tanggal_diminta }}</td>
-      <td>{{ $a->jam_diminta }}</td>
-
-      <td>
-        @if ($a->status === 'approved')
-          <span class="badge success">APPROVED</span>
-        @elseif ($a->status === 'pending')
-          <span class="badge warning">PENDING</span>
-        @else
-          <span class="badge danger">REJECTED</span>
-        @endif
-      </td>
-
-      <td>
-        <a href="{{ route('dokter.appointments.show', $a->id) }}" class="link">Kelola</a>
-      </td>
-    </tr>
-  @empty
-    <tr>
-      <td colspan="6" style="text-align:center;color:#6b7280;padding:18px;">
-        Belum ada permintaan janji temu.
-      </td>
-    </tr>
-  @endforelse
-</tbody>
+        <tr>
+          <td>{{ $appointments->firstItem() + $i }}</td>
+          <td>{{ $a->patient?->nama_lengkap ?? '-' }}</td>
+          <td>{{ $a->tanggal_diminta }}</td>
+          <td>{{ $a->jam_diminta }}</td>
+          <td>
+            <span class="badge success">APPROVED</span>
+          </td>
+          <td>
+            <a href="{{ route('dokter.appointments.show', $a->id) }}" class="link">Detail</a>
+          </td>
+        </tr>
+      @empty
+        <tr>
+          <td colspan="6" style="text-align:center;color:#6b7280;padding:18px;">
+            Belum ada jadwal yang sudah disetujui.
+          </td>
+        </tr>
+      @endforelse
+      </tbody>
     </table>
   </div>
 

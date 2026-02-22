@@ -10,9 +10,9 @@ class DokterAppointmentController extends Controller
 {
     public function index()
     {
-        // Dokter bisa lihat SEMUA appointments (pending, approved, rejected)
+        // Dokter hanya bisa lihat appointments yang sudah approved
         $appointments = Appointment::with('patient')
-            ->whereIn('status', ['pending', 'approved', 'rejected'])
+            ->where('status', 'approved')
             ->orderBy('tanggal_diminta')
             ->orderBy('jam_diminta')
             ->paginate(10);
