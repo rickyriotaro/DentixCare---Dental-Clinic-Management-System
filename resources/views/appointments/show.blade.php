@@ -5,25 +5,35 @@
   <div class="page-title">Kelola Janji Temu</div>
 
   <div class="form-card" style="max-width:900px;">
-    <div style="margin-bottom:14px; display:flex; gap:10px;">
-      <a class="btn-ghost" href="{{ route('appointments.index') }}">Kembali</a>
 
-      @if($appointment->status === 'pending')
-      <form method="POST" action="{{ route('appointments.reject', $appointment->id) }}"
-            id="reject-form" style="display:flex;flex-direction:column;gap:8px;background:#fff5f5;padding:12px;border-radius:8px;border:1px solid #fca5a5;margin-bottom:12px;">
-        @csrf
-        <div style="font-weight:600;color:#dc2626;">Tolak & Informasikan ke Pasien</div>
-        <textarea name="alasan" rows="2" placeholder="Tulis alasan/informasi untuk pasien (wajib)..."
-          style="width:100%;border:1px solid #fca5a5;border-radius:6px;padding:8px;font-size:13px;resize:vertical;"
+    {{-- Tombol Kembali (baris sendiri) --}}
+    <div style="margin-bottom:16px;">
+      <a class="btn-ghost" href="{{ route('appointments.index') }}">← Kembali</a>
+    </div>
+
+    @if($appointment->status === 'pending')
+    {{-- Form Penolakan (fullwidth, lebih besar) --}}
+    <form method="POST" action="{{ route('appointments.reject', $appointment->id) }}" id="reject-form">
+      @csrf
+      <div style="background:#fff5f5;border:1.5px solid #fca5a5;border-radius:12px;padding:20px;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span style="font-size:18px;">🚫</span>
+          <span style="font-weight:700;color:#dc2626;font-size:15px;">Tolak &amp; Informasikan ke Pasien</span>
+        </div>
+        <textarea name="alasan" rows="4"
+          placeholder="Tulis alasan penolakan atau informasi untuk pasien... (wajib diisi)"
+          style="width:100%;border:1.5px solid #fca5a5;border-radius:8px;padding:12px;font-size:14px;resize:vertical;line-height:1.6;color:#374151;outline:none;"
           required></textarea>
-        <div>
-          <button class="btn-danger" type="submit" onclick="return confirm('Tolak dan kirim informasi ke pasien?')">
-            Tolak & Kirim Notifikasi
+        <div style="margin-top:12px;">
+          <button class="btn-danger" type="submit"
+            onclick="return confirm('Yakin ingin menolak jadwal ini dan mengirim notifikasi ke pasien?')"
+            style="padding:10px 24px;font-size:14px;">
+            🚫 Tolak &amp; Kirim Notifikasi
           </button>
         </div>
-      </form>
-      @endif
-    </div>
+      </div>
+    </form>
+    @endif
 
     @if ($errors->any())
       <div class="alert-error">Gagal menyimpan. Periksa input jadwal.</div>
