@@ -118,8 +118,21 @@ class PatientAppointmentController extends Controller
             return response()->json(['error' => 'date parameter required'], 400);
         }
 
-        // All possible slots
-        $allSlots = ['16:00', '17:00', '18:00', '19:00', '20:00'];
+        // All possible slots (30-minute intervals)
+        $allSlots = ['16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
+
+        // Cek apakah tanggal ini adalah hari libur klinik
+        $holiday = \App\Models\DoctorSchedule::whereDate('tanggal', $date)->first();
+        if ($holiday) {
+            return response()->json([
+                'date'            => $date,
+                'all_slots'       => $allSlots,
+                'unavailable'     => $allSlots, // semua slot tidak tersedia
+                'is_holiday'      => true,
+                'holiday_message' => 'Klinik tidak buka pada tanggal ini.' .
+                    ($holiday->keterangan ? ' Keterangan: ' . $holiday->keterangan : ''),
+            ]);
+        }
 
         // Slots already booked — pakai jam_dikonfirmasi (jam yg DOKTER set), bukan jam_diminta pasien
         // Hanya approved yang blok, karena itulah jam yg benar-benar dikonfirmasi
@@ -151,6 +164,7 @@ class PatientAppointmentController extends Controller
             'date'        => $date,
             'all_slots'   => $allSlots,
             'unavailable' => $unavailable,
+            'is_holiday'  => false,
         ]);
     }
 }

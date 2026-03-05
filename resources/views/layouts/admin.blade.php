@@ -47,6 +47,12 @@
         <span class="dot"><i class="fa-solid fa-user-doctor"></i></span>
         Kelola Dokter
         </a>
+
+        <a class="{{ request()->routeIs('jadwal-libur.*') ? 'active' : '' }}"
+        href="{{ route('jadwal-libur.index') }}">
+        <span class="dot"><i class="fa-regular fa-calendar-xmark"></i></span>
+        Jadwal Libur Dokter
+        </a>
         
         <a class="{{ request()->routeIs('notifications.*') ? 'active' : '' }}"
         href="{{ route('notifications.index') }}">
@@ -64,6 +70,12 @@
         href="{{ route('fhir.explorer') }}">
         <span class="dot"><i class="fa-solid fa-server"></i></span>
          FHIR Explorer
+        </a>
+
+        <a class="{{ request()->routeIs('pengujian.*') ? 'active' : '' }}"
+        href="{{ route('pengujian.index') }}">
+        <span class="dot"><i class="fa-solid fa-flask-vial"></i></span>
+         Pengujian Sistem
         </a>
 
         {{-- TODO: Uncomment when FinancialReportController is created

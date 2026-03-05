@@ -22,7 +22,7 @@ class DokterAppointmentController extends Controller
 
     public function show(Appointment $appointment)
     {
-        $appointment->load('patient');
+        $appointment->load('patient.medicalRecords');
         return view('dokter.appointments.show', compact('appointment'));
     }
 

@@ -936,7 +936,15 @@ class FHIRController extends Controller
                 return $contact['value'];
             }
         }
-        return null;
+        // Generate fallback email if not provided
+        $phone = null;
+        foreach ($telecom as $contact) {
+            if (isset($contact['system']) && $contact['system'] === 'phone') {
+                $phone = $contact['value'];
+                break;
+            }
+        }
+        return ($phone ?? 'user_' . time()) . '@fhir-generated.local';
     }
 
     /**

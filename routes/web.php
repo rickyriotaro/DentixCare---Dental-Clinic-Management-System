@@ -16,6 +16,7 @@ use App\Http\Controllers\DokterTreatmentPlanController;
 use App\Http\Controllers\DokterPatientControlController;
 use App\Http\Controllers\DokterRiwayatPerawatanController;
 use App\Http\Controllers\DokterManagementController;
+use App\Http\Controllers\DoctorScheduleController;
 
 
 
@@ -68,10 +69,20 @@ use App\Http\Controllers\DokterManagementController;
     // kelola dokter
     Route::resource('dokters', DokterManagementController::class)->except(['show', 'create', 'edit']);
     
+    // jadwal libur dokter
+    Route::get('/jadwal-libur', [DoctorScheduleController::class, 'index'])->name('jadwal-libur.index');
+    Route::post('/jadwal-libur', [DoctorScheduleController::class, 'store'])->name('jadwal-libur.store');
+    Route::delete('/jadwal-libur/{id}', [DoctorScheduleController::class, 'destroy'])->name('jadwal-libur.destroy');
+
     // FHIR Explorer (Inline - No Controller)
     Route::get('/fhir-explorer', function() {
         return view('fhir.explorer');
     })->name('fhir.explorer');
+
+    // Pengujian Interoperabilitas
+    Route::get('/pengujian', function() {
+        return view('pengujian.index');
+    })->name('pengujian.index');
 });
     /** DOKTER */
     Route::middleware(['auth', 'role:dokter'])
